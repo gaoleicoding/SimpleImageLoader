@@ -28,15 +28,26 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ImageLoader {
+public class ImgLoader {
 
     String TAG = getClass().getName();
-    Context context;
+//    Context context;
     ExecutorService mExecutorService;
     /**
      * 记录所有正在下载或等待下载的任务。
      */
     private Set<BitmapWorkerTask> taskCollection;
+
+    private ImgLoader() {
+    }
+
+    public static ImgLoader getInstance() {
+        return SingletonBuilder.instance;
+    }
+
+    private static class SingletonBuilder {
+        private static final ImgLoader instance = new ImgLoader();
+    }
 
     /**
      * 图片硬盘缓存核心类。
@@ -45,26 +56,26 @@ public class ImageLoader {
     MemoryCache mMemoryCache;
     ImageView imageView;
 
-    public ImageLoader(Context context) {
-        this.context = context;
-        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        mMemoryCache = new MemoryCache();
-
-        taskCollection = new HashSet<BitmapWorkerTask>();
-        // 获取应用程序最大可
-        try {
-            // 获取图片缓存路径
-            File cacheDir = getDiskCacheDir(context, "thumb");
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs();
-            }
-            // 创建DiskLruCache实例，初始化缓存数据
-            mDiskLruCache = DiskLruCache
-                    .open(cacheDir, getAppVersion(context), 1, 10 * 1024 * 1024);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ImgLoader(Context context) {
+//        this.context = context;
+//        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//        mMemoryCache = new MemoryCache();
+//
+//        taskCollection = new HashSet<BitmapWorkerTask>();
+//        // 获取应用程序最大可
+//        try {
+//            // 获取图片缓存路径
+//            File cacheDir = getDiskCacheDir(context, "thumb");
+//            if (!cacheDir.exists()) {
+//                cacheDir.mkdirs();
+//            }
+//            // 创建DiskLruCache实例，初始化缓存数据
+//            mDiskLruCache = DiskLruCache
+//                    .open(cacheDir, getAppVersion(context), 1, 10 * 1024 * 1024);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
