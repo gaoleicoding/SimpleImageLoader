@@ -31,12 +31,20 @@ import java.util.concurrent.Executors;
 public class ImgLoader {
 
     String TAG = getClass().getName();
-//    Context context;
+    //    Context context;
     ExecutorService mExecutorService;
     /**
      * 记录所有正在下载或等待下载的任务。
      */
     private Set<BitmapWorkerTask> taskCollection;
+    ImgLoaderConfig config;
+    /**
+     * 图片硬盘缓存核心类。
+     */
+    DiskLruCache mDiskLruCache;
+    MemoryCache mMemoryCache;
+
+    ImageView imageView;
 
     private ImgLoader() {
     }
@@ -49,33 +57,28 @@ public class ImgLoader {
         private static final ImgLoader instance = new ImgLoader();
     }
 
-    /**
-     * 图片硬盘缓存核心类。
-     */
-    DiskLruCache mDiskLruCache;
-    MemoryCache mMemoryCache;
-    ImageView imageView;
 
-    public ImgLoader(Context context) {
-//        this.context = context;
-//        mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//        mMemoryCache = new MemoryCache();
-//
-//        taskCollection = new HashSet<BitmapWorkerTask>();
-//        // 获取应用程序最大可
-//        try {
-//            // 获取图片缓存路径
-//            File cacheDir = getDiskCacheDir(context, "thumb");
-//            if (!cacheDir.exists()) {
-//                cacheDir.mkdirs();
-//            }
-//            // 创建DiskLruCache实例，初始化缓存数据
-//            mDiskLruCache = DiskLruCache
-//                    .open(cacheDir, getAppVersion(context), 1, 10 * 1024 * 1024);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    public ImgLoader init(ImgLoaderConfig config) {
+        this.config = config;
+        mExecutorService = Executors.newFixedThreadPool(config.getThreadCount());
+        mMemoryCache = new MemoryCache();
+        mMemoryCache.init(config.getMemoryCacheSize());
+        taskCollection = new HashSet<BitmapWorkerTask>();
+        // 获取应用程序最大可
+        try {
+            // 获取图片缓存路径
+            File cacheDir = getDiskCacheDir(config.context, config.getCachePath());
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs();
+            }
+            // 创建DiskLruCache实例，初始化缓存数据
+            mDiskLruCache = DiskLruCache
+                    .open(cacheDir, getAppVersion(config.context), 1, config.getDiskCacheSize());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
 
@@ -239,6 +242,7 @@ public class ImgLoader {
                     addBitmapToMemoryCache(params[0], bitmap);
 
                 }
+
                 return bitmap;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -260,7 +264,7 @@ public class ImgLoader {
             // 根据Tag找到相应的ImageView控件，将下载好的图片显示出来。
             if (imageView != null && bitmap != null) {
                 imageView.setImageBitmap(bitmap);
-            }
+            }else  imageView.setImageResource(config.load_error_resId);
             taskCollection.remove(this);
         }
 
@@ -304,15 +308,15 @@ public class ImgLoader {
     /**
      * 根据传入的uniqueName获取硬盘缓存的路径地址。
      */
-    public File getDiskCacheDir(Context context, String uniqueName) {
-        String cachePath;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable()) {
-            cachePath = context.getExternalCacheDir().getPath();
-        } else {
-            cachePath = context.getCacheDir().getPath();
-        }
-        return new File(cachePath + File.separator + uniqueName);
+    public File getDiskCacheDir(Context context, String cachePath) {
+//        String cachePath;
+//        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+//                || !Environment.isExternalStorageRemovable()) {
+//            cachePath = context.getExternalCacheDir().getPath();
+//        } else {
+//            cachePath = context.getCacheDir().getPath();
+//        }
+        return new File(cachePath);
     }
 
     /**

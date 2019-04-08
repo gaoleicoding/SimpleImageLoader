@@ -28,9 +28,12 @@ public class MainActivity extends AppCompatActivity {
         imageView2 = findViewById(R.id.imageView2);
         bt_load = findViewById(R.id.bt_load);
 
-        ImgLoaderConfig config = new ImgLoaderConfig.Builder().create();
+        ImgLoaderConfig config = new ImgLoaderConfig.Builder(this)
+                .setThreadCount(4)
+                .setMemoryCacheSize(2 * 1024 * 1024)
+                .build();
         ImgLoader imgLoader = ImgLoader.getInstance();
-        imgLoader.displayImage(url, imageView);
+        imgLoader.init(config).displayImage(url, imageView);
         bt_load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         requestPermission();
-        ImageLoader.getInstance().displayImage(url, imageView2);
+//        ImageLoader.getInstance().displayImage(url, imageView2);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
