@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         requestPermission();
-//        ImageLoader.getInstance().displayImage(url, imageView2);
+        ImageLoader.getInstance().displayImage(url, imageView2);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

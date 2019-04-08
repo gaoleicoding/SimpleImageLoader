@@ -31,7 +31,6 @@ import java.util.concurrent.Executors;
 public class ImgLoader {
 
     String TAG = getClass().getName();
-    //    Context context;
     ExecutorService mExecutorService;
     /**
      * 记录所有正在下载或等待下载的任务。
@@ -43,8 +42,9 @@ public class ImgLoader {
      */
     DiskLruCache mDiskLruCache;
     MemoryCache mMemoryCache;
-
     ImageView imageView;
+    private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
+    private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 
     private ImgLoader() {
     }
@@ -59,6 +59,9 @@ public class ImgLoader {
 
 
     public ImgLoader init(ImgLoaderConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
+        }
         this.config = config;
         mExecutorService = Executors.newFixedThreadPool(config.getThreadCount());
         mMemoryCache = new MemoryCache();
@@ -83,11 +86,17 @@ public class ImgLoader {
 
 
     public void displayImage(String imageUrl, ImageView imageView) {
+
+        checkConfiguration();
         this.imageView = imageView;
 
         loadBitmaps(imageView, imageUrl);
     }
-
+    private void checkConfiguration() {
+        if (config == null) {
+            throw new IllegalStateException(ERROR_NOT_INIT);
+        }
+    }
     /**
      * 将一张图片存储到LruCache中。
      *
@@ -309,13 +318,7 @@ public class ImgLoader {
      * 根据传入的uniqueName获取硬盘缓存的路径地址。
      */
     public File getDiskCacheDir(Context context, String cachePath) {
-//        String cachePath;
-//        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-//                || !Environment.isExternalStorageRemovable()) {
-//            cachePath = context.getExternalCacheDir().getPath();
-//        } else {
-//            cachePath = context.getCacheDir().getPath();
-//        }
+
         return new File(cachePath);
     }
 
