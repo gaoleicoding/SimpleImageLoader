@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         requestPermission();
-//        ImageLoader.getInstance().displayImage(url, imageView2);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

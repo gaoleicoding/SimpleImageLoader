@@ -6,9 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
-import android.util.LruCache;
 import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
@@ -24,25 +22,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ImgLoader {
 
-    String TAG = getClass().getName();
-    ExecutorService mExecutorService;
+    private String TAG = getClass().getName();
+    private ExecutorService mExecutorService;
     /**
      * 记录所有正在下载或等待下载的任务。
      */
     private Set<BitmapWorkerTask> taskCollection;
-    ImgLoaderConfig config;
+    private ImgLoaderConfig config;
     /**
      * 图片硬盘缓存核心类。
      */
-    DiskLruCache mDiskLruCache;
-    MemoryCache mMemoryCache;
-    ImageView imageView;
+    private DiskLruCache mDiskLruCache;
+    private MemoryLruCache mMemoryCache;
+    private ImageView imageView;
     private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
     private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 
@@ -64,7 +61,7 @@ public class ImgLoader {
         }
         this.config = config;
         mExecutorService = Executors.newFixedThreadPool(config.getThreadCount());
-        mMemoryCache = new MemoryCache();
+        mMemoryCache = new MemoryLruCache();
         mMemoryCache.init(config.getMemoryCacheSize());
         taskCollection = new HashSet<BitmapWorkerTask>();
         // 获取应用程序最大可
@@ -136,7 +133,7 @@ public class ImgLoader {
                 task.execute(imageUrl);
             } else {
                 Log.d(TAG, "----从内存读取图片----");
-                if (imageView != null && bitmap != null) {
+                if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
                 }
             }

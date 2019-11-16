@@ -3,15 +3,11 @@ package com.example.simpleimageloader;
 import android.content.Context;
 
 public class ImgLoaderConfig {
-    int memoryCacheSize, diskCacheSize;
-    int threadCount;
-    int load_error_resId;
-    String cachePath;
-    Context context;
-
-    public static ImgLoaderConfig createDefault(Context context) {
-        return new ImgLoaderConfig.Builder(context).build();
-    }
+    private int memoryCacheSize, diskCacheSize;
+    private int threadCount;
+    public int load_error_resId;
+    private String cachePath;
+    public Context context;
 
     public String getCachePath() {
         return cachePath;

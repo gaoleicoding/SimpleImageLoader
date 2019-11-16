@@ -3,17 +3,14 @@ package com.example.simpleimageloader;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
-public class MemoryCache implements ImageCache {
+public class MemoryLruCache implements ImageCache {
     private LruCache<String, Bitmap> mMemoryLruCache;
 
-    public MemoryCache() {
-//        final int maxMemory = (int) (Runtime.getRuntime().maxMemory()) / 1024;
-//        final int cacheSize = maxMemory / 4;
-
+    public MemoryLruCache() {
     }
 
     public void init(int cacheSize) {
-        mMemoryLruCache = new LruCache<String, Bitmap>(cacheSize);
+        mMemoryLruCache = new LruCache<>(cacheSize);
     }
 
     @Override
